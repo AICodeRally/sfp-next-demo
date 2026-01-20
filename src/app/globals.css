@@ -1,0 +1,302 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   SFP Design System v2.0
+   Based on SPARCC foundation with SFP branding
+   ============================================ */
+
+:root {
+  color-scheme: light;
+
+  /* Primary colors - SFP branded */
+  --color-primary: #2a6fff;       /* Tide blue (SFP primary) */
+  --color-secondary: #6366f1;     /* Indigo */
+  --color-accent: #8b5cf6;        /* Purple */
+
+  /* Base colors */
+  --color-foreground: #12141c;    /* Ink 900 - text */
+  --color-muted: #5c657a;         /* Ink 400 - muted text */
+  --color-surface: #ffffff;       /* White cards */
+  --color-surface-alt: #f6f7f9;   /* Ink 50 - alternate surface */
+  --color-border: #e9ebf1;        /* Ink 100 - borders */
+  --color-background: #f6f7f9;    /* Ink 50 - page background */
+
+  /* Semantic colors */
+  --color-success: #10b981;       /* Emerald */
+  --color-warning: #f59e0b;       /* Amber */
+  --color-error: #ef4444;         /* Red */
+  --color-info: var(--color-primary);
+
+  /* Semantic backgrounds (alpha) */
+  --color-success-bg: rgba(16, 185, 129, 0.14);
+  --color-warning-bg: rgba(245, 158, 11, 0.16);
+  --color-error-bg: rgba(239, 68, 68, 0.16);
+  --color-info-bg: color-mix(in srgb, var(--color-info) 16%, transparent);
+
+  /* Semantic borders (alpha) */
+  --color-success-border: rgba(16, 185, 129, 0.35);
+  --color-warning-border: rgba(245, 158, 11, 0.35);
+  --color-error-border: rgba(239, 68, 68, 0.35);
+  --color-info-border: color-mix(in srgb, var(--color-info) 35%, transparent);
+
+  /* Accent variants */
+  --color-accent-bg: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  --color-accent-border: color-mix(in srgb, var(--color-accent) 35%, transparent);
+
+  /* Glass morphism */
+  --surface-glass: rgba(255, 255, 255, 0.7);
+  --surface-glass-border: rgba(148, 163, 184, 0.3);
+
+  /* SFP gradient (Tide-based) */
+  --sfp-gradient-start: #2a6fff;  /* Tide 500 */
+  --sfp-gradient-mid1: #4a8fff;   /* Tide 400 */
+  --sfp-gradient-mid2: #6366f1;   /* Indigo */
+  --sfp-gradient-end: #8b5cf6;    /* Purple */
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  /* Primary colors - adjusted for dark mode */
+  --color-primary: #4a8fff;       /* Lighter tide for dark bg */
+  --color-secondary: #818cf8;     /* Lighter indigo */
+  --color-accent: #a78bfa;        /* Lighter purple */
+
+  /* Base colors - inverted */
+  --color-foreground: #e9ebf1;    /* Light text */
+  --color-muted: #aab0c1;         /* Lighter muted */
+  --color-surface: #1a1d26;       /* Dark surface */
+  --color-surface-alt: #242834;   /* Darker alternate */
+  --color-border: #2f3443;        /* Dark border */
+  --color-background: #12141c;    /* Darkest background */
+
+  /* Semantic colors - lighter for dark bg */
+  --color-success: #6ee7b7;
+  --color-warning: #fcd34d;
+  --color-error: #fca5a5;
+  --color-info: var(--color-primary);
+
+  /* Semantic backgrounds - stronger alpha for dark */
+  --color-success-bg: rgba(16, 185, 129, 0.22);
+  --color-warning-bg: rgba(245, 158, 11, 0.22);
+  --color-error-bg: rgba(239, 68, 68, 0.22);
+  --color-info-bg: color-mix(in srgb, var(--color-info) 22%, transparent);
+
+  /* Semantic borders - stronger for dark */
+  --color-success-border: rgba(16, 185, 129, 0.55);
+  --color-warning-border: rgba(245, 158, 11, 0.55);
+  --color-error-border: rgba(239, 68, 68, 0.55);
+  --color-info-border: color-mix(in srgb, var(--color-info) 45%, transparent);
+
+  /* Accent variants - stronger alpha */
+  --color-accent-bg: color-mix(in srgb, var(--color-accent) 22%, transparent);
+  --color-accent-border: color-mix(in srgb, var(--color-accent) 45%, transparent);
+
+  /* Glass morphism - dark version */
+  --surface-glass: rgba(26, 29, 38, 0.65);
+  --surface-glass-border: rgba(148, 163, 184, 0.25);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  margin: 0;
+  padding: 0;
+}
+
+/* Light mode: subtle gradient background */
+body[data-theme='light'],
+body:not([data-theme]) {
+  background: radial-gradient(1200px circle at top left, rgba(42, 111, 255, 0.08), transparent 60%),
+    radial-gradient(900px circle at 30% 10%, rgba(255, 187, 77, 0.15), transparent 55%),
+    linear-gradient(180deg, #f9fafc 0%, #f1f4fa 100%);
+}
+
+::selection {
+  background: rgba(42, 111, 255, 0.2);
+}
+
+[data-theme='dark'] ::selection {
+  background: rgba(74, 143, 255, 0.3);
+}
+
+/* ============================================
+   SFP Branded Components
+   ============================================ */
+
+/* Hero background with SFP gradient */
+.sfp-hero-bg {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--sfp-gradient-start) 14%, var(--color-background)),
+    color-mix(in srgb, var(--sfp-gradient-end) 12%, var(--color-background)),
+    var(--color-background)
+  );
+}
+
+[data-theme='dark'] .sfp-hero-bg {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--sfp-gradient-start) 22%, var(--color-background)),
+    color-mix(in srgb, var(--sfp-gradient-end) 16%, var(--color-background)),
+    var(--color-background)
+  );
+}
+
+/* Glass morphism cards */
+.glass-card {
+  background-color: var(--surface-glass);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--surface-glass-border);
+  border-radius: 0.5rem;
+}
+
+.glass-card-hover {
+  background-color: var(--surface-glass);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--surface-glass-border);
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+}
+
+.glass-card-hover:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 10px 15px -3px rgba(42, 111, 255, 0.2);
+}
+
+/* Button styles */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-secondary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(42, 111, 255, 0.3);
+}
+
+.btn-secondary {
+  background-color: var(--color-surface-alt);
+  color: var(--color-foreground);
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-border);
+  border-color: var(--color-muted);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-muted);
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-ghost:hover {
+  background-color: var(--color-surface-alt);
+  color: var(--color-foreground);
+}
+
+/* Theme-aware cards */
+.theme-card {
+  border: 1px solid color-mix(in srgb, var(--color-accent) 25%, transparent);
+  background: var(--color-surface);
+  box-shadow: 0 10px 30px -18px color-mix(in srgb, var(--color-primary) 55%, transparent);
+  border-radius: 0.75rem;
+  transition: all 0.3s;
+}
+
+.theme-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px -16px color-mix(in srgb, var(--color-primary) 65%, transparent);
+}
+
+.theme-card-strong {
+  border: 1px solid color-mix(in srgb, var(--color-primary) 40%, transparent);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--sfp-gradient-start) 16%, var(--color-surface)),
+    color-mix(in srgb, var(--sfp-gradient-mid2) 12%, var(--color-surface))
+  );
+  box-shadow: 0 12px 32px -18px color-mix(in srgb, var(--color-primary) 65%, transparent);
+  border-radius: 0.75rem;
+  transition: all 0.3s;
+}
+
+.theme-card-strong:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 16px 48px -16px color-mix(in srgb, var(--color-primary) 75%, transparent);
+}
+
+/* Gradient text utility */
+.gradient-text {
+  background-image: linear-gradient(
+    90deg,
+    var(--sfp-gradient-start),
+    var(--sfp-gradient-mid1),
+    var(--sfp-gradient-mid2),
+    var(--sfp-gradient-end)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% auto;
+}
+
+/* Base heading styles */
+h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 2.25rem;
+  color: var(--color-foreground);
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 2rem;
+  color: var(--color-foreground);
+}
+
+h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.75rem;
+  color: var(--color-foreground);
+}
+
+h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.75rem;
+  color: var(--color-foreground);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
