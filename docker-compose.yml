@@ -1,0 +1,42 @@
+# SFP Financial Model - Docker Compose Configuration
+# Runs both the Next.js frontend and Python engine
+
+version: '3.8'
+
+services:
+  # Next.js Frontend
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - ENGINE_URL=http://engine:8000
+    depends_on:
+      - engine
+    networks:
+      - sfp-network
+
+  # Python Financial Engine
+  engine:
+    build:
+      context: ./engine
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - sfp-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  sfp-network:
+    driver: bridge

@@ -19,6 +19,27 @@ export type TableDef = {
 
 export const tableDefs: TableDef[] = [
   {
+    key: "scenarios",
+    label: "Scenarios",
+    description: "Scenario registry used by the model engine.",
+    columns: [
+      { key: "name", label: "Name", type: "text" },
+      { key: "description", label: "Description", type: "text" },
+      { key: "isActive", label: "Active", type: "select", options: ["yes", "no"] }
+    ],
+    newRow: () => ({ id: "", name: "Base", description: "Primary scenario", isActive: "yes" })
+  },
+  {
+    key: "channels",
+    label: "Channels",
+    description: "Sales channels and partner motions.",
+    columns: [
+      { key: "name", label: "Name", type: "text" },
+      { key: "type", label: "Type", type: "select", options: ["direct", "reseller", "referral", "si_partner"] }
+    ],
+    newRow: () => ({ id: "", name: "Direct", type: "direct" })
+  },
+  {
     key: "segments",
     label: "Segments",
     description: "Customer cohorts and target mix for revenue planning.",
@@ -75,6 +96,19 @@ export const tableDefs: TableDef[] = [
     newRow: () => ({ id: "", partner: "New Partner", feePct: 0, discountPct: 0 })
   },
   {
+    key: "retentionAssumptions",
+    label: "Retention Assumptions",
+    description: "Churn, contraction, and expansion assumptions by segment/channel.",
+    columns: [
+      { key: "segment", label: "Segment", type: "text" },
+      { key: "channel", label: "Channel", type: "text" },
+      { key: "logoChurnPct", label: "Logo Churn %", type: "number" },
+      { key: "revenueChurnPct", label: "Revenue Churn %", type: "number" },
+      { key: "expansionPct", label: "Expansion %", type: "number" }
+    ],
+    newRow: () => ({ id: "", segment: "Mid-Market", channel: "Direct", logoChurnPct: 2, revenueChurnPct: 1, expansionPct: 2 })
+  },
+  {
     key: "aiUsageProfile",
     label: "AI Usage Profile",
     description: "Token consumption and cache behavior by customer.",
@@ -84,6 +118,30 @@ export const tableDefs: TableDef[] = [
       { key: "cachePct", label: "Cache %", type: "number" }
     ],
     newRow: () => ({ id: "", name: "New Profile", tokensPerCustomer: 0, cachePct: 0 })
+  },
+  {
+    key: "usageAssumptions",
+    label: "Usage Assumptions",
+    description: "Usage drivers per tenant for AI and infrastructure.",
+    columns: [
+      { key: "segment", label: "Segment", type: "text" },
+      { key: "channel", label: "Channel", type: "text" },
+      { key: "tokensPerTenant", label: "Tokens / Tenant", type: "number" },
+      { key: "computeHours", label: "Compute Hours", type: "number" },
+      { key: "storageGb", label: "Storage (GB)", type: "number" }
+    ],
+    newRow: () => ({ id: "", segment: "Mid-Market", channel: "Direct", tokensPerTenant: 24000, computeHours: 2, storageGb: 10 })
+  },
+  {
+    key: "cogsUnitCosts",
+    label: "COGS Unit Costs",
+    description: "Unit cost assumptions for usage and platform expenses.",
+    columns: [
+      { key: "costName", label: "Cost Name", type: "text" },
+      { key: "unit", label: "Unit", type: "select", options: ["token_1k", "hour", "gb"] },
+      { key: "unitCost", label: "Unit Cost", type: "number" }
+    ],
+    newRow: () => ({ id: "", costName: "LLM Tokens", unit: "token_1k", unitCost: 0.75 })
   },
   {
     key: "servicesSku",
@@ -147,6 +205,18 @@ export const tableDefs: TableDef[] = [
       { key: "dso", label: "DSO", type: "number" }
     ],
     newRow: () => ({ id: "", segment: "New Segment", dso: 0 })
+  },
+  {
+    key: "runSettings",
+    label: "Run Settings",
+    description: "Output grain and statement toggles.",
+    columns: [
+      { key: "runName", label: "Run Name", type: "text" },
+      { key: "outputGrain", label: "Output Grain", type: "select", options: ["monthly", "quarterly"] },
+      { key: "includeBalanceSheet", label: "Balance Sheet", type: "select", options: ["yes", "no"] },
+      { key: "includeUnitEconomics", label: "Unit Economics", type: "select", options: ["yes", "no"] }
+    ],
+    newRow: () => ({ id: "", runName: "Board Plan", outputGrain: "monthly", includeBalanceSheet: "yes", includeUnitEconomics: "yes" })
   }
 ];
 

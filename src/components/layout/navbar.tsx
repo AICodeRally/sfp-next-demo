@@ -6,10 +6,12 @@ import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { PersonIcon, GearIcon, ExitIcon, ChevronDownIcon } from '@radix-ui/react-icons';
+import { useCompanyProfile } from '@/lib/sfp-store';
 
 export function Navbar() {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const profile = useCompanyProfile();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -57,13 +59,15 @@ export function Navbar() {
                 </span>
               </div>
 
-              {/* Module Info */}
+              {/* Module Info / Company Name */}
               <div className="border-l border-[color:var(--color-border)] pl-6">
                 <h1 className="gradient-text text-lg font-bold">
-                  Startup Financial Planning
+                  {profile?.name || "Startup Financial Planning"}
                 </h1>
                 <p className="text-xs text-[color:var(--color-muted)] mt-0.5">
-                  Scenario-based modeling for founders
+                  {profile?.industry
+                    ? `${profile.industry.charAt(0).toUpperCase() + profile.industry.slice(1)} • Financial Planning`
+                    : "Scenario-based modeling for founders"}
                 </p>
               </div>
             </Link>

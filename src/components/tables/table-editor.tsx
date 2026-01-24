@@ -31,6 +31,7 @@ export function TableEditor({ scenarioId, tableKey }: { scenarioId: string; tabl
   }
 
   function startAdd() {
+    if (!def) return;
     const next = def.newRow() as Record<string, string | number>;
     setEditingId(null);
     setFormState(next);
@@ -38,6 +39,7 @@ export function TableEditor({ scenarioId, tableKey }: { scenarioId: string; tabl
   }
 
   function handleChange(key: string, value: string) {
+    if (!def) return;
     const column = def.columns.find((col) => col.key === key);
     if (column?.type === "number") {
       setFormState((prev) => ({ ...prev, [key]: value === "" ? 0 : Number(value) }));
@@ -64,12 +66,12 @@ export function TableEditor({ scenarioId, tableKey }: { scenarioId: string; tabl
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between">
-          <p className="text-sm text-ink-500">{rows.length} rows</p>
+          <p className="text-sm text-muted">{rows.length} rows</p>
           <Button variant="outline" onClick={startAdd} data-table-add>
             Add Row
           </Button>
         </div>
-        <div className="overflow-x-auto rounded-xl border border-ink-100">
+        <div className="overflow-x-auto rounded-xl border border-border">
           <Table>
             <TableHeader>
               <tr>
@@ -87,7 +89,7 @@ export function TableEditor({ scenarioId, tableKey }: { scenarioId: string; tabl
                   ))}
                   <TableCell className="text-right">
                     <button
-                      className="text-xs text-ink-400 hover:text-ink-700"
+                      className="text-xs text-muted hover:text-foreground"
                       onClick={(event) => {
                         event.stopPropagation();
                         deleteTableRow(scenarioId, tableKey, row.id);
@@ -111,7 +113,7 @@ export function TableEditor({ scenarioId, tableKey }: { scenarioId: string; tabl
         <div className="space-y-4">
           {def.columns.map((column) => (
             <div key={column.key} className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wide text-ink-400">{column.label}</label>
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted">{column.label}</label>
               {column.type === "select" ? (
                 <Select
                   value={String(formState[column.key] ?? column.options?.[0] ?? "")}

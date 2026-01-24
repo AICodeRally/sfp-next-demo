@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Space_Grotesk } from "next/font/google";
 import "@/app/globals.css";
 import AppShell from "@/components/layout/app-shell";
 import { Providers } from "@/components/Providers";
 import { CommandPalette } from "@/components/CommandPalette";
+import { OnboardingRedirect } from "@/components/onboarding/onboarding-redirect";
 
-const inter = Inter({ subsets: ["latin"] });
+const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "Startup Financial Planning (SFP)",
@@ -15,8 +16,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${spaceGrotesk.variable} font-sans`}>
         <Providers>
+          <OnboardingRedirect />
           <AppShell>{children}</AppShell>
           <CommandPalette />
         </Providers>

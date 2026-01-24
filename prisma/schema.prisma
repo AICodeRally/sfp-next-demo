@@ -1,0 +1,122 @@
+// SFP Financial Model - Prisma Schema
+// Database: Neon PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Core scenario container
+model Scenario {
+  id        String   @id @default(cuid())
+  name      String
+  status    String   @default("draft") // draft, active, archived
+  dataType  String   @default("SaaS")  // SaaS, Marketplace, Hardware, etc.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  settings ScenarioSettings?
+  inputs   ScenarioInputs?
+  outputs  ScenarioOutputs?
+  runs     ModelRun[]
+
+  @@map("scenarios")
+}
+
+// Model horizon and control settings (1:1 with Scenario)
+model ScenarioSettings {
+  id         String @id @default(cuid())
+  scenarioId String @unique
+
+  // Model horizon
+  startMonth    String // YYYY-MM format
+  monthsForward Int    @default(24)
+  currency      String @default("USD")
+
+  // Scenario mode
+  scenarioMode String @default("base") // base, upside, downside
+
+  // AI cost controls
+  costPer1kTokens Float @default(0.002)
+  cacheHitPct     Float @default(0)
+  tokensPerRun    Float @default(1000)
+
+  // Channel settings
+  channelSharePct    Float  @default(0)
+  channelMode        String @default("direct")
+  channelFeePct      Float  @default(0)
+  channelDiscountPct Float  @default(0)
+
+  // Relation
+  scenario Scenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+
+  @@map("scenario_settings")
+}
+
+// Input tables stored as JSON (1:1 with Scenario)
+model ScenarioInputs {
+  id         String @id @default(cuid())
+  scenarioId String @unique
+
+  // Input tables as JSON
+  pricingPlans         Json @default("[]") // PricingPlanRow[]
+  cohortPlan           Json @default("[]") // CohortPlanRow[]
+  retentionAssumptions Json @default("[]") // RetentionRow[]
+  usageAssumptions     Json @default("[]") // UsageRow[]
+  cogsUnitCosts        Json @default("[]") // CogsUnitCostRow[]
+  expensePlan          Json @default("[]") // ExpenseRow[]
+  headcountPlan        Json @default("[]") // HeadcountRow[]
+  skus                 Json @default("[]") // SkuRow[]
+  servicesSku          Json @default("[]") // ServicesSkuRow[]
+  servicesAttachPlan   Json @default("[]") // ServicesAttachRow[]
+  deliveryCapacityPlan Json @default("[]") // DeliveryCapacityRow[]
+
+  // Relation
+  scenario Scenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+
+  @@map("scenario_inputs")
+}
+
+// Output tables stored as JSON (1:1 with Scenario)
+model ScenarioOutputs {
+  id         String @id @default(cuid())
+  scenarioId String @unique
+
+  // Output tables as JSON
+  statementsMonthly Json @default("[]") // StatementRow[]
+  metricsMonthly    Json @default("[]") // MetricsRow[]
+  validation        Json @default("[]") // ValidationResult[]
+
+  // Run metadata
+  lastRunAt String?
+  runStatus String? // success, error, pending
+
+  // Relation
+  scenario Scenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+
+  @@map("scenario_outputs")
+}
+
+// Audit trail of model runs (1:many with Scenario)
+model ModelRun {
+  id         String   @id @default(cuid())
+  scenarioId String
+  runAt      DateTime @default(now())
+  status     String   // success, error
+  duration   Int?     // milliseconds
+  errorMsg   String?
+
+  // Snapshot of inputs/outputs at run time (optional)
+  inputsSnapshot  Json?
+  outputsSnapshot Json?
+
+  // Relation
+  scenario Scenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+
+  @@map("model_runs")
+}

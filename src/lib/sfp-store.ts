@@ -2,24 +2,41 @@
 
 import { useSyncExternalStore } from "react";
 import { seedScenarios } from "@/lib/sfp-seed";
-import type { Scenario, Settings, Tables } from "@/lib/sfp-types";
+import { scenarioTemplates } from "@/lib/sfp-templates";
+import type { Scenario, Settings, Tables, CompanyProfile, DataType, DemoMetadata } from "@/lib/sfp-types";
 import { runModel } from "@/lib/sfp-model";
+import { migrateLocalStorageV1toV2 } from "@/lib/migrate-v1-to-v2";
 
-const STORE_KEY = "sfp_scenarios_v1";
+const STORE_KEY_SCENARIOS = "sfp_scenarios_v2"; // Bumped from v1 for data type migration
+const STORE_KEY_PROFILE = "sfp_company_profile_v1";
 let cache: Scenario[] | null = null;
+let profileCache: CompanyProfile | null | undefined = undefined; // undefined = not loaded, null = no profile
 const listeners = new Set<() => void>();
+const profileListeners = new Set<() => void>();
 
 function emit() {
   listeners.forEach((listener) => listener());
+}
+
+function emitProfile() {
+  profileListeners.forEach((listener) => listener());
 }
 
 function nowIso() {
   return new Date().toISOString();
 }
 
+const baseTables = seedScenarios[0]?.tables;
+
+function normalizeScenario(scenario: Scenario): Scenario {
+  const tables = baseTables ? { ...baseTables, ...scenario.tables } : scenario.tables;
+  const outputs = scenario.outputs ? { ...scenario.outputs, validation: scenario.outputs.validation ?? [] } : null;
+  return { ...scenario, tables, outputs };
+}
+
 function ensureSeeded(scenarios: Scenario[]) {
-  if (scenarios.length > 0) return scenarios;
-  return seedScenarios.map((scenario) => ({ ...scenario, createdAt: nowIso(), updatedAt: nowIso() }));
+  if (scenarios.length > 0) return scenarios.map(normalizeScenario);
+  return seedScenarios.map((scenario) => normalizeScenario({ ...scenario, createdAt: nowIso(), updatedAt: nowIso() }));
 }
 
 function readStorage(): Scenario[] {
@@ -29,10 +46,13 @@ function readStorage(): Scenario[] {
 
   if (cache) return cache;
 
-  const raw = window.localStorage.getItem(STORE_KEY);
+  // Auto-migrate v1 to v2 on first load
+  migrateLocalStorageV1toV2();
+
+  const raw = window.localStorage.getItem(STORE_KEY_SCENARIOS);
   if (!raw) {
     cache = ensureSeeded([]);
-    window.localStorage.setItem(STORE_KEY, JSON.stringify(cache));
+    window.localStorage.setItem(STORE_KEY_SCENARIOS, JSON.stringify(cache));
     return cache;
   }
 
@@ -42,14 +62,14 @@ function readStorage(): Scenario[] {
     cache = ensureSeeded([]);
   }
 
-  window.localStorage.setItem(STORE_KEY, JSON.stringify(cache));
+  window.localStorage.setItem(STORE_KEY_SCENARIOS, JSON.stringify(cache));
   return cache;
 }
 
 function writeStorage(next: Scenario[]) {
   cache = next;
   if (typeof window !== "undefined") {
-    window.localStorage.setItem(STORE_KEY, JSON.stringify(next));
+    window.localStorage.setItem(STORE_KEY_SCENARIOS, JSON.stringify(next));
   }
   emit();
 }
@@ -91,6 +111,41 @@ export function createScenario(name: string) {
   return next;
 }
 
+export function createScenarioFromTemplate(templateId: string) {
+  const scenarios = readStorage();
+  const base = scenarios[0] ?? seedScenarios[0];
+  const template = scenarioTemplates.find((item) => item.id === templateId);
+  if (!template) return null;
+  const now = nowIso();
+  const settings = {
+    ...base.settings,
+    ...template.settings,
+    modelHorizon: { ...base.settings.modelHorizon, ...template.settings?.modelHorizon },
+    revenueMechanics: { ...base.settings.revenueMechanics, ...template.settings?.revenueMechanics },
+    channel: { ...base.settings.channel, ...template.settings?.channel },
+    aiCostControls: { ...base.settings.aiCostControls, ...template.settings?.aiCostControls },
+    collectionsTerms: { ...base.settings.collectionsTerms, ...template.settings?.collectionsTerms },
+  };
+  const tables = {
+    ...base.tables,
+    ...template.tables,
+  };
+  const next: Scenario = {
+    ...base,
+    id: makeId("sfp"),
+    name: template.name,
+    status: "draft",
+    dataType: "template",
+    createdAt: now,
+    updatedAt: now,
+    settings,
+    tables,
+    outputs: null,
+  };
+  writeStorage([next, ...scenarios]);
+  return next;
+}
+
 export function cloneScenario(id: string) {
   const scenarios = readStorage();
   const source = scenarios.find((scenario) => scenario.id === id);
@@ -111,9 +166,10 @@ export function cloneScenario(id: string) {
 export function toggleScenarioLock(id: string) {
   const scenarios = readStorage().map((scenario) => {
     if (scenario.id !== id) return scenario;
+    const newStatus: "draft" | "locked" = scenario.status === "locked" ? "draft" : "locked";
     return {
       ...scenario,
-      status: scenario.status === "locked" ? "draft" : "locked",
+      status: newStatus,
       updatedAt: nowIso()
     };
   });
@@ -204,4 +260,109 @@ export function runScenarioModel(id: string) {
 
 export function makeRowId(prefix: string) {
   return makeId(prefix);
+}
+
+// ============================================================
+// Company Profile Management
+// ============================================================
+
+function readProfileStorage(): CompanyProfile | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  if (profileCache !== undefined) return profileCache;
+
+  const raw = window.localStorage.getItem(STORE_KEY_PROFILE);
+  if (!raw) {
+    profileCache = null;
+    return null;
+  }
+
+  try {
+    profileCache = JSON.parse(raw) as CompanyProfile;
+  } catch {
+    profileCache = null;
+  }
+
+  return profileCache;
+}
+
+function writeProfileStorage(profile: CompanyProfile | null) {
+  profileCache = profile;
+  if (typeof window !== "undefined") {
+    if (profile === null) {
+      window.localStorage.removeItem(STORE_KEY_PROFILE);
+    } else {
+      window.localStorage.setItem(STORE_KEY_PROFILE, JSON.stringify(profile));
+    }
+  }
+  emitProfile();
+}
+
+export function getCompanyProfile(): CompanyProfile | null {
+  return readProfileStorage();
+}
+
+export function saveCompanyProfile(profile: CompanyProfile) {
+  writeProfileStorage(profile);
+}
+
+export function deleteCompanyProfile() {
+  writeProfileStorage(null);
+}
+
+export function useCompanyProfile(): CompanyProfile | null {
+  return useSyncExternalStore(
+    (listener) => {
+      profileListeners.add(listener);
+      return () => profileListeners.delete(listener);
+    },
+    () => readProfileStorage(),
+    () => null
+  );
+}
+
+// ============================================================
+// Data Type Management
+// ============================================================
+
+export function updateScenarioDataType(id: string, dataType: DataType, demoMetadata?: DemoMetadata) {
+  const scenarios = readStorage().map((scenario) => {
+    if (scenario.id !== id) return scenario;
+    return {
+      ...scenario,
+      dataType,
+      demoMetadata: dataType === "demo" || dataType === "template" ? demoMetadata : undefined,
+      updatedAt: nowIso()
+    };
+  });
+  writeStorage(scenarios);
+}
+
+export function filterScenariosByDataType(filter: "all" | "demo" | "client"): Scenario[] {
+  const scenarios = readStorage();
+  if (filter === "all") return scenarios;
+  if (filter === "demo") return scenarios.filter((s) => s.dataType === "demo" || s.dataType === "template");
+  return scenarios.filter((s) => s.dataType === "client");
+}
+
+export function bulkDeleteDemoData() {
+  const scenarios = readStorage().filter((s) => s.dataType === "client");
+  writeStorage(scenarios);
+}
+
+export function getScenarioStats() {
+  const scenarios = readStorage();
+  return {
+    total: scenarios.length,
+    demo: scenarios.filter((s) => s.dataType === "demo").length,
+    template: scenarios.filter((s) => s.dataType === "template").length,
+    client: scenarios.filter((s) => s.dataType === "client").length
+  };
+}
+
+export function deleteScenario(id: string) {
+  const scenarios = readStorage().filter((s) => s.id !== id);
+  writeStorage(scenarios);
 }

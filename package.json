@@ -2,31 +2,52 @@
   "name": "sfp-next-demo",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.28.1",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev -p 3030",
+    "dev:all": "concurrently \"pnpm dev\" \"pnpm engine:dev\"",
+    "build": "prisma generate && next build",
+    "vercel-build": "prisma generate && next build",
+    "postinstall": "prisma generate",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "prisma generate && tsc --noEmit",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
+    "engine:dev": "cd engine && uvicorn api:app --reload --port 8000",
+    "engine:install": "cd engine && pip install -r requirements.txt",
+    "env:pull": "vercel env pull --environment=preview .env.local",
+    "env:pull:prod": "vercel env pull --environment=production .env.local",
+    "env:pull:dev": "vercel env pull --environment=development .env.local"
   },
   "dependencies": {
     "@radix-ui/react-icons": "^1.3.2",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
-    "next": "14.2.5",
+    "next": "16.1.4",
     "next-auth": "^4.24.13",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "recharts": "^3.6.0",
     "tailwind-merge": "^2.5.2",
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@prisma/client": "^6",
     "@types/node": "^20.14.12",
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
     "autoprefixer": "^10.4.19",
-    "eslint": "^8.57.0",
-    "eslint-config-next": "14.2.5",
+    "concurrently": "^8.2.2",
+    "eslint": "^9.39.2",
+    "eslint-config-next": "16.1.4",
     "postcss": "^8.4.39",
+    "prisma": "^6.19.2",
     "tailwindcss": "^3.4.10",
     "typescript": "^5.5.4"
   }

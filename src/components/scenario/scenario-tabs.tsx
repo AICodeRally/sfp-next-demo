@@ -15,7 +15,7 @@ export function ScenarioTabs({ basePath }: { basePath: string }) {
   const pathname = usePathname();
 
   return (
-    <div className="flex flex-wrap gap-2 rounded-xl border border-ink-100 bg-white/80 p-2">
+    <div className="flex flex-wrap gap-2 rounded-xl border border-border bg-surface p-2">
       {tabs.map((tab) => {
         const href = `${basePath}/${tab.href}`;
         const active = pathname === href;
@@ -25,7 +25,7 @@ export function ScenarioTabs({ basePath }: { basePath: string }) {
             href={href}
             className={cn(
               "rounded-lg px-3 py-2 text-sm font-medium transition",
-              active ? "bg-ink-900 text-white" : "text-ink-600 hover:bg-ink-100"
+              active ? "bg-foreground text-background" : "text-muted hover:bg-surface-alt"
             )}
           >
             {tab.label}

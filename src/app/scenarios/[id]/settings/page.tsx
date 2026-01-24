@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { use } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,9 +10,10 @@ import { Select } from "@/components/ui/select";
 import { runScenarioModel, updateSettings, useScenarios } from "@/lib/sfp-store";
 import type { Settings } from "@/lib/sfp-types";
 
-export default function SettingsPage({ params }: { params: { id: string } }) {
+export default function SettingsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const scenarios = useScenarios();
-  const scenario = scenarios.find((item) => item.id === params.id);
+  const scenario = scenarios.find((item) => item.id === id);
 
   const [draft, setDraft] = React.useState<Settings | null>(scenario?.settings ?? null);
 
@@ -21,9 +23,9 @@ export default function SettingsPage({ params }: { params: { id: string } }) {
 
   if (!scenario || !draft) {
     return (
-      <div className="rounded-2xl border border-ink-100 bg-white/80 px-6 py-6 shadow-soft">
-        <h3 className="text-lg font-semibold text-ink-900">Scenario not found</h3>
-        <p className="text-sm text-ink-500">Return to scenarios to choose a valid scenario.</p>
+      <div className="rounded-2xl border border-border bg-surface px-6 py-6 shadow-soft">
+        <h3 className="text-lg font-semibold text-foreground">Scenario not found</h3>
+        <p className="text-sm text-muted">Return to scenarios to choose a valid scenario.</p>
       </div>
     );
   }
@@ -43,10 +45,12 @@ export default function SettingsPage({ params }: { params: { id: string } }) {
   }
 
   function handleSave() {
+    if (!scenario || !draft) return;
     updateSettings(scenario.id, draft);
   }
 
   function handleRun() {
+    if (!scenario) return;
     runScenarioModel(scenario.id);
   }
 
@@ -63,7 +67,7 @@ export default function SettingsPage({ params }: { params: { id: string } }) {
             <Button variant="outline" onClick={handleSave}>
               Save Settings
             </Button>
-            <span className="rounded-full bg-ink-100 px-3 py-1 text-xs text-ink-500">{scenario.outputs ? "Run available" : "No results yet"}</span>
+            <span className="rounded-full bg-surface-alt px-3 py-1 text-xs text-muted">{scenario.outputs ? "Run available" : "No results yet"}</span>
           </div>
         }
       />
@@ -76,7 +80,7 @@ export default function SettingsPage({ params }: { params: { id: string } }) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-xs font-semibold uppercase tracking-wide text-ink-400">Start Month</label>
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted">Start Month</label>
               <Input
                 type="month"
                 value={draft.modelHorizon.startMonth}
@@ -84,7 +88,7 @@ export default function SettingsPage({ params }: { params: { id: string } }) {
               />
             </div>
             <div>
-              <label className="text-xs font-semibold uppercase tracking-wide text-ink-400">Months Forward</label>
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted">Months Forward</label>
               <Input
                 type="number"
                 value={draft.modelHorizon.monthsForward}
@@ -92,7 +96,7 @@ export default function SettingsPage({ params }: { params: { id: string } }) {
               />
             </div>
             <div>
-              <label className="text-xs font-semibold uppercase tracking-wide text-ink-400">Currency</label>
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted">Currency</label>
               <Select
                 value={draft.modelHorizon.currency}
                 onChange={(event) => updateDraft("modelHorizon.currency", event.target.value)}
@@ -112,7 +116,7 @@ export default function SettingsPage({ params }: { params: { id: string } }) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-xs font-semibold uppercase tracking-wide text-ink-400">Mode</label>
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted">Mode</label>
               <Select
                 value={draft.scenarioMode}
                 onChange={(event) => updateDraft("scenarioMode", event.target.value)}
@@ -132,7 +136,7 @@ export default function SettingsPage({ params }: { params: { id: string } }) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-xs font-semibold uppercase tracking-wide text-ink-400">SaaS Mix %</label>
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted">SaaS Mix %</label>
               <Input
                 type="number"
                 value={draft.revenueMechanics.saasMixPct}
@@ -140,7 +144,7 @@ export default function SettingsPage({ params }: { params: { id: string } }) {
               />
             </div>
             <div>
-              <label className="text-xs font-semibold uppercase tracking-wide text-ink-400">Annual Prepay %</label>
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted">Annual Prepay %</label>
               <Input
                 type="number"
                 value={draft.revenueMechanics.annualPrepaySharePct}
@@ -157,7 +161,7 @@ export default function SettingsPage({ params }: { params: { id: string } }) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-xs font-semibold uppercase tracking-wide text-ink-400">Channel Share %</label>
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted">Channel Share %</label>
               <Input
                 type="number"
                 value={draft.channel.sharePct}
@@ -165,7 +169,7 @@ export default function SettingsPage({ params }: { params: { id: string } }) {
               />
             </div>
             <div>
-              <label className="text-xs font-semibold uppercase tracking-wide text-ink-400">Mode</label>
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted">Mode</label>
               <Select value={draft.channel.mode} onChange={(event) => updateDraft("channel.mode", event.target.value)}>
                 <option value="referral">Referral</option>
                 <option value="reseller">Reseller</option>
@@ -173,7 +177,7 @@ export default function SettingsPage({ params }: { params: { id: string } }) {
             </div>
             <div className="grid gap-3 md:grid-cols-2">
               <div>
-                <label className="text-xs font-semibold uppercase tracking-wide text-ink-400">Fee %</label>
+                <label className="text-xs font-semibold uppercase tracking-wide text-muted">Fee %</label>
                 <Input
                   type="number"
                   value={draft.channel.feePct}
@@ -181,7 +185,7 @@ export default function SettingsPage({ params }: { params: { id: string } }) {
                 />
               </div>
               <div>
-                <label className="text-xs font-semibold uppercase tracking-wide text-ink-400">Discount %</label>
+                <label className="text-xs font-semibold uppercase tracking-wide text-muted">Discount %</label>
                 <Input
                   type="number"
                   value={draft.channel.discountPct}
@@ -199,7 +203,7 @@ export default function SettingsPage({ params }: { params: { id: string } }) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-xs font-semibold uppercase tracking-wide text-ink-400">Cost per 1K Tokens</label>
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted">Cost per 1K Tokens</label>
               <Input
                 type="number"
                 value={draft.aiCostControls.costPer1kTokens}
@@ -207,7 +211,7 @@ export default function SettingsPage({ params }: { params: { id: string } }) {
               />
             </div>
             <div>
-              <label className="text-xs font-semibold uppercase tracking-wide text-ink-400">Cache Hit %</label>
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted">Cache Hit %</label>
               <Input
                 type="number"
                 value={draft.aiCostControls.cacheHitPct}
@@ -215,7 +219,7 @@ export default function SettingsPage({ params }: { params: { id: string } }) {
               />
             </div>
             <div>
-              <label className="text-xs font-semibold uppercase tracking-wide text-ink-400">Tokens per Run</label>
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted">Tokens per Run</label>
               <Input
                 type="number"
                 value={draft.aiCostControls.tokensPerRun}
@@ -232,7 +236,7 @@ export default function SettingsPage({ params }: { params: { id: string } }) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-xs font-semibold uppercase tracking-wide text-ink-400">DSO</label>
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted">DSO</label>
               <Input
                 type="number"
                 value={draft.collectionsTerms.dso}
@@ -240,7 +244,7 @@ export default function SettingsPage({ params }: { params: { id: string } }) {
               />
             </div>
             <div>
-              <label className="text-xs font-semibold uppercase tracking-wide text-ink-400">Net Terms</label>
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted">Net Terms</label>
               <Input
                 type="number"
                 value={draft.collectionsTerms.netTerms}

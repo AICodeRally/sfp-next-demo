@@ -6,7 +6,7 @@ export function Table({ className, ...props }: React.HTMLAttributes<HTMLTableEle
 }
 
 export function TableHeader({ className, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) {
-  return <thead className={cn("text-xs uppercase text-ink-400", className)} {...props} />;
+  return <thead className={cn("text-xs uppercase text-muted", className)} {...props} />;
 }
 
 export function TableBody({ className, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) {
@@ -22,5 +22,5 @@ export function TableHead({ className, ...props }: React.ThHTMLAttributes<HTMLTa
 }
 
 export function TableCell({ className, ...props }: React.TdHTMLAttributes<HTMLTableCellElement>) {
-  return <td className={cn("px-3 py-2 text-ink-700", className)} {...props} />;
+  return <td className={cn("px-3 py-2 text-foreground", className)} {...props} />;
 }

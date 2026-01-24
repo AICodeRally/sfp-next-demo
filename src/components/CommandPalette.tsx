@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useScenarios } from '@/lib/sfp-store';
 import { formatDateTime } from '@/lib/format';
@@ -31,56 +31,73 @@ export function CommandPalette() {
   }, []);
 
   // Filter scenarios based on search
-  const filteredScenarios = scenarios.filter((scenario) =>
-    scenario.name.toLowerCase().includes(search.toLowerCase())
+  const filteredScenarios = useMemo(
+    () => scenarios.filter((scenario) => scenario.name.toLowerCase().includes(search.toLowerCase())),
+    [scenarios, search]
   );
 
   // Commands (static actions)
-  const commands = [
-    {
-      id: 'home',
-      label: 'Go to Overview',
-      icon: '🏠',
-      action: () => router.push('/'),
-      group: 'Navigate'
-    },
-    {
-      id: 'scenarios',
-      label: 'View All Scenarios',
-      icon: '📋',
-      action: () => router.push('/scenarios'),
-      group: 'Navigate'
-    },
-    {
-      id: 'create',
-      label: 'Create New Scenario',
-      icon: '➕',
-      action: () => {
-        const { createScenario } = require('@/lib/sfp-store');
-        const scenario = createScenario(`Scenario ${scenarios.length + 1}`);
-        if (scenario) router.push(`/scenarios/${scenario.id}/settings`);
+  type CommandItem = {
+    id: string;
+    label: string;
+    icon: string;
+    action: () => void;
+    group: string;
+    meta?: string;
+  };
+
+  const commands: CommandItem[] = useMemo(
+    () => [
+      {
+        id: 'home',
+        label: 'Go to Overview',
+        icon: '🏠',
+        action: () => router.push('/'),
+        group: 'Navigate'
       },
-      group: 'Actions'
-    }
-  ];
+      {
+        id: 'scenarios',
+        label: 'View All Scenarios',
+        icon: '📋',
+        action: () => router.push('/scenarios'),
+        group: 'Navigate'
+      },
+      {
+        id: 'create',
+        label: 'Create New Scenario',
+        icon: '➕',
+        action: () => {
+          const { createScenario } = require('@/lib/sfp-store');
+          const scenario = createScenario(`Scenario ${scenarios.length + 1}`);
+          if (scenario) router.push(`/scenarios/${scenario.id}/settings`);
+        },
+        group: 'Actions'
+      }
+    ],
+    [router, scenarios.length]
+  );
 
   // Filter commands
-  const filteredCommands = commands.filter((cmd) =>
-    cmd.label.toLowerCase().includes(search.toLowerCase())
+  const filteredCommands = useMemo(
+    () => commands.filter((cmd) => cmd.label.toLowerCase().includes(search.toLowerCase())),
+    [commands, search]
   );
 
   // Combine commands + scenarios for navigation
-  const allItems = [
-    ...filteredCommands,
-    ...filteredScenarios.map((scenario) => ({
-      id: scenario.id,
-      label: scenario.name,
-      icon: '📊',
-      action: () => router.push(`/scenarios/${scenario.id}/settings`),
-      group: 'Scenarios',
-      meta: formatDateTime(scenario.updatedAt)
-    }))
-  ];
+  const allItems = useMemo(
+    () => [
+      ...filteredCommands,
+      ...filteredScenarios.map((scenario) => ({
+        id: scenario.id,
+        label: scenario.name,
+        icon: '📊',
+        action: () => router.push(`/scenarios/${scenario.id}/settings`),
+        group: 'Scenarios',
+        meta: formatDateTime(scenario.updatedAt)
+      }))
+    ],
+    [filteredCommands, filteredScenarios, router]
+  );
 
   // Arrow key navigation
   useEffect(() => {
@@ -146,7 +163,7 @@ export function CommandPalette() {
           <div className="max-h-[400px] overflow-y-auto">
             {allItems.length === 0 ? (
               <div className="px-4 py-8 text-center text-sm text-muted">
-                No results found for "{search}"
+                No results found for &quot;{search}&quot;
               </div>
             ) : (
               <div className="py-2">

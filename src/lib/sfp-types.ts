@@ -5,6 +5,7 @@ export const ScenarioModeSchema = z.enum(["base", "upside", "downside"]);
 export const ChannelModeSchema = z.enum(["referral", "reseller"]);
 export const BillingSchema = z.enum(["monthly", "annual"]);
 export const SkuCategorySchema = z.enum(["saas", "services"]);
+export const ChannelTypeSchema = z.enum(["direct", "reseller", "referral", "si_partner"]);
 
 export const SettingsSchema = z.object({
   modelHorizon: z.object({
@@ -116,6 +117,52 @@ export const CollectionsTermSchema = z.object({
   dso: z.number().min(0)
 });
 
+export const ScenarioDimSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string().optional(),
+  isActive: z.enum(["yes", "no"])
+});
+
+export const ChannelSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  type: ChannelTypeSchema
+});
+
+export const RetentionAssumptionSchema = z.object({
+  id: z.string(),
+  segment: z.string(),
+  channel: z.string(),
+  logoChurnPct: z.number().min(0).max(100),
+  revenueChurnPct: z.number().min(0).max(100),
+  expansionPct: z.number().min(0).max(100)
+});
+
+export const UsageAssumptionSchema = z.object({
+  id: z.string(),
+  segment: z.string(),
+  channel: z.string(),
+  tokensPerTenant: z.number().min(0),
+  computeHours: z.number().min(0),
+  storageGb: z.number().min(0)
+});
+
+export const CogsUnitCostSchema = z.object({
+  id: z.string(),
+  costName: z.string(),
+  unit: z.string(),
+  unitCost: z.number().min(0)
+});
+
+export const RunSettingSchema = z.object({
+  id: z.string(),
+  runName: z.string(),
+  outputGrain: z.enum(["monthly", "quarterly"]),
+  includeBalanceSheet: z.enum(["yes", "no"]),
+  includeUnitEconomics: z.enum(["yes", "no"])
+});
+
 export const TablesSchema = z.object({
   segments: z.array(SegmentSchema),
   skus: z.array(SkuSchema),
@@ -128,7 +175,13 @@ export const TablesSchema = z.object({
   deliveryCapacityPlan: z.array(DeliveryCapacityPlanSchema),
   headcountPlan: z.array(HeadcountPlanSchema),
   expensePlan: z.array(ExpensePlanSchema),
-  collectionsTerms: z.array(CollectionsTermSchema)
+  collectionsTerms: z.array(CollectionsTermSchema),
+  scenarios: z.array(ScenarioDimSchema),
+  channels: z.array(ChannelSchema),
+  retentionAssumptions: z.array(RetentionAssumptionSchema),
+  usageAssumptions: z.array(UsageAssumptionSchema),
+  cogsUnitCosts: z.array(CogsUnitCostSchema),
+  runSettings: z.array(RunSettingSchema)
 });
 
 export const StatementMonthlySchema = z.object({
@@ -154,13 +207,71 @@ export const OutputsSchema = z.object({
   statementsMonthly: z.array(StatementMonthlySchema),
   metricsMonthly: z.array(MetricsMonthlySchema),
   lastRunAt: z.string(),
-  runStatus: z.enum(["idle", "success", "error"])
+  runStatus: z.enum(["idle", "success", "error"]),
+  validation: z.array(
+    z.object({
+      id: z.string(),
+      severity: z.enum(["info", "warning", "error"]),
+      passed: z.boolean(),
+      message: z.string()
+    })
+  )
 });
+
+// Data Classification System (matches SPARCC pattern)
+export const DataTypeSchema = z.enum(["demo", "template", "client"]);
+export type DataType = z.infer<typeof DataTypeSchema>;
+
+// Demo Metadata (contextual tagging)
+export const DemoMetadataSchema = z.object({
+  year: z.number().optional(),
+  businessUnit: z.string().optional(),
+  division: z.string().optional(),
+  category: z.string().optional(),
+  description: z.string().optional()
+});
+export type DemoMetadata = z.infer<typeof DemoMetadataSchema>;
+
+// Company Profile
+export const CompanyProfileSchema = z.object({
+  id: z.string(),
+  name: z.string().min(1, "Company name required"),
+  industry: z.enum([
+    "technology",
+    "healthcare",
+    "finance",
+    "retail",
+    "manufacturing",
+    "education",
+    "other"
+  ]),
+  stage: z.enum([
+    "idea",
+    "pre-seed",
+    "seed",
+    "series-a",
+    "series-b",
+    "series-c-plus",
+    "growth"
+  ]),
+  teamSize: z.number().min(1),
+  foundedYear: z.number().optional(),
+  description: z.string().optional(),
+  website: z.string().optional().refine(
+    (val) => !val || val === "" || val.includes("."),
+    { message: "Please enter a valid website (e.g., example.com or https://example.com)" }
+  ),
+  createdAt: z.string(),
+  updatedAt: z.string()
+});
+export type CompanyProfile = z.infer<typeof CompanyProfileSchema>;
 
 export const ScenarioSchema = z.object({
   id: z.string(),
   name: z.string(),
   status: ScenarioStatusSchema,
+  dataType: DataTypeSchema.default("client"), // NEW: Data classification
+  demoMetadata: DemoMetadataSchema.optional(), // NEW: Demo context tags
   createdAt: z.string(),
   updatedAt: z.string(),
   settings: SettingsSchema,

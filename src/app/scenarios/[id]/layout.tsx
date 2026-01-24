@@ -1,5 +1,6 @@
 "use client";
 
+import { use } from "react";
 import { ScenarioHeader } from "@/components/scenario/scenario-header";
 import { ScenarioTabs } from "@/components/scenario/scenario-tabs";
 
@@ -8,13 +9,14 @@ export default function ScenarioLayout({
   params
 }: {
   children: React.ReactNode;
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const basePath = `/scenarios/${params.id}`;
+  const { id } = use(params);
+  const basePath = `/scenarios/${id}`;
 
   return (
     <div className="space-y-6">
-      <ScenarioHeader scenarioId={params.id} />
+      <ScenarioHeader scenarioId={id} />
       <ScenarioTabs basePath={basePath} />
       {children}
     </div>
