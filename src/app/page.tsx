@@ -34,7 +34,7 @@ export default function HomePage() {
     <div className="space-y-10">
       <PageHeader
         title="Founder Model Studio"
-        description="Run board-ready scenarios with full visibility into revenue, cash, and margin drivers."        
+        description="Run board-ready scenarios with full visibility into revenue, cash, and margin drivers."
         actionLabel="Run Latest Model"
         onAction={() => activeScenario && (window.location.href = `/scenarios/${activeScenario.id}/results`)}
         meta={<RunStatusPill status={status} />}

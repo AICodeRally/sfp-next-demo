@@ -9,7 +9,7 @@ import { OnboardingRedirect } from "@/components/onboarding/onboarding-redirect"
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "Startup Financial Planning (SFP)",
+  title: "SFP - Startup Financial Planning",
   description: "Scenario-based modeling for startup financial planning."
 };
 
