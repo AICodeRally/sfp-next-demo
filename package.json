@@ -26,6 +26,7 @@
     "env:pull:dev": "vercel env pull --environment=development .env.local"
   },
   "dependencies": {
+    "@aicr/auth": "file:../aicr/packages/auth",
     "@prisma/adapter-pg": "^7.3.0",
     "@radix-ui/react-icons": "^1.3.2",
     "clsx": "^2.1.1",
