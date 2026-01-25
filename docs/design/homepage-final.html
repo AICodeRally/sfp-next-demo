@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IntelligentSPM - The Clearing House for SPM</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+      color: #E2E8F0;
+      min-height: 100vh;
+    }
+
+    /* Navigation */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 60px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .logo { font-size: 28px; font-weight: 700; }
+    .logo .white { color: #E2E8F0; }
+    .logo .teal { color: #38BDF8; }
+    .nav-links { display: flex; gap: 36px; }
+    .nav-links a { color: #E2E8F0; text-decoration: none; font-size: 15px; }
+    .nav-links a:hover { color: #38BDF8; }
+    .nav-links a.highlight { color: #FF8737; }
+    .btn-subscribe {
+      background: #38BDF8;
+      color: #0F172A;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 100px 60px;
+      background: linear-gradient(180deg, rgba(56,189,248,0.05) 0%, transparent 100%);
+    }
+    .hero h1 { font-size: 56px; margin-bottom: 24px; line-height: 1.1; }
+    .hero h1 .teal { color: #38BDF8; }
+    .hero p { font-size: 20px; color: #94A3B8; margin-bottom: 40px; max-width: 600px; margin-left: auto; margin-right: auto; }
+    .btn-cta {
+      background: #38BDF8;
+      color: #0F172A;
+      padding: 18px 36px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 18px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Pillars */
+    .pillars {
+      padding: 80px 60px;
+      text-align: center;
+    }
+    .pillars h3 { color: #94A3B8; margin-bottom: 32px; font-size: 18px; }
+    .pillar-grid { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+    .pillar {
+      padding: 18px 36px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 15px;
+      transition: transform 0.2s;
+    }
+    .pillar:hover { transform: translateY(-2px); }
+    .pillar.purple { background: rgba(130,65,200,0.2); border: 2px solid #8241C8; color: #8241C8; }
+    .pillar.teal { background: rgba(56,189,248,0.2); border: 2px solid #38BDF8; color: #38BDF8; }
+    .pillar.orange { background: rgba(255,135,55,0.2); border: 2px solid #FF8737; color: #FF8737; }
+    .pillar.lime { background: rgba(163,230,53,0.2); border: 2px solid #A3E635; color: #A3E635; }
+    .pillar.pink { background: rgba(234,27,133,0.2); border: 2px solid #EA1B85; color: #EA1B85; }
+
+    /* Featured Content */
+    .featured {
+      padding: 80px 60px;
+    }
+    .featured h2 { font-size: 32px; margin-bottom: 40px; }
+    .content-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+    .content-card {
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 32px;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: border-color 0.2s;
+    }
+    .content-card:hover { border-color: rgba(255,255,255,0.3); }
+    .content-card .category { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; font-weight: 600; }
+    .content-card h4 { font-size: 20px; margin-bottom: 12px; line-height: 1.3; }
+    .content-card p { font-size: 15px; color: #94A3B8; margin-bottom: 16px; line-height: 1.5; }
+    .content-card .meta { font-size: 13px; color: #64748B; }
+
+    /* Toddfather */
+    .toddfather {
+      padding: 80px 60px;
+      display: flex;
+      align-items: center;
+      gap: 60px;
+      background: rgba(255,135,55,0.05);
+    }
+    .avatar {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FF8737, #EA1B85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 56px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .toddfather-content h3 { font-size: 36px; margin-bottom: 16px; }
+    .toddfather-content h3 .orange { color: #FF8737; }
+    .toddfather-content p { color: #94A3B8; margin-bottom: 28px; font-size: 18px; line-height: 1.6; }
+    .toddfather-buttons { display: flex; gap: 16px; }
+    .btn-outline {
+      background: transparent;
+      border: 2px solid #E2E8F0;
+      color: #E2E8F0;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    .btn-filled { background: rgba(255,135,55,0.2); border-color: #FF8737; color: #FF8737; }
+
+    /* Problem Agitation */
+    .problem {
+      padding: 80px 60px;
+      background: rgba(234,27,133,0.08);
+      border-top: 2px solid #EA1B85;
+      border-bottom: 2px solid #EA1B85;
+    }
+    .problem h3 {
+      color: #EA1B85;
+      font-size: 32px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .warning-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: #EA1B85;
+      border-radius: 50%;
+      font-weight: bold;
+      color: white;
+      font-size: 24px;
+    }
+    .problem > p { color: #94A3B8; margin-bottom: 40px; font-size: 18px; }
+    .stats { display: flex; gap: 30px; }
+    .stat {
+      flex: 1;
+      background: rgba(0,0,0,0.3);
+      padding: 32px;
+      border-radius: 12px;
+      text-align: center;
+      border: 1px solid rgba(234,27,133,0.3);
+    }
+    .stat .number { font-size: 48px; font-weight: 700; color: #E2E8F0; margin-bottom: 12px; }
+    .stat .label { font-size: 15px; color: #94A3B8; }
+
+    /* Services */
+    .services {
+      padding: 80px 60px;
+    }
+    .services h2 { font-size: 32px; margin-bottom: 40px; text-align: center; }
+    .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+    .service {
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 40px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: border-color 0.2s;
+    }
+    .service:hover { border-color: #FF8737; }
+    .service h4 { font-size: 22px; margin-bottom: 12px; }
+    .service .price { font-size: 36px; font-weight: 700; color: #FF8737; margin-bottom: 16px; }
+    .service p { font-size: 15px; color: #94A3B8; }
+    .service .ai-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #58108E, #8241C8);
+      color: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    /* Subscribe */
+    .subscribe {
+      padding: 100px 60px;
+      text-align: center;
+      background: linear-gradient(180deg, transparent 0%, rgba(56,189,248,0.05) 100%);
+    }
+    .subscribe h3 { font-size: 36px; margin-bottom: 12px; }
+    .subscribe p { color: #94A3B8; margin-bottom: 32px; font-size: 18px; }
+    .subscribe-form { display: flex; gap: 16px; justify-content: center; }
+    .subscribe-form input {
+      padding: 16px 24px;
+      border-radius: 10px;
+      border: 2px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.05);
+      color: #E2E8F0;
+      width: 320px;
+      font-size: 16px;
+    }
+    .subscribe-form input:focus {
+      outline: none;
+      border-color: #38BDF8;
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="logo"><span class="white">Intelligent</span><span class="teal">SPM</span></div>
+    <div class="nav-links">
+      <a href="#">Blog</a>
+      <a href="#">Learn</a>
+      <a href="#">Tools</a>
+      <a href="#">Vendors</a>
+      <a href="#">Services</a>
+      <a href="#" class="highlight">The Toddfather</a>
+    </div>
+    <button class="btn-subscribe">Subscribe</button>
+  </nav>
+
+  <section class="hero">
+    <h1>The <span class="teal">Clearing House</span> for SPM</h1>
+    <p>30 years of sales compensation expertise. No vendor agenda. No consultant spin.</p>
+    <button class="btn-cta">Run a Free Plan Check <span>→</span></button>
+  </section>
+
+  <section class="pillars">
+    <h3>Intelligence built into every layer of SPM</h3>
+    <div class="pillar-grid">
+      <div class="pillar purple">Sales Planning</div>
+      <div class="pillar teal">Sales Technology</div>
+      <div class="pillar orange">Sales Operations</div>
+      <div class="pillar lime">Sales Governance</div>
+      <div class="pillar pink">Sales Intelligence</div>
+    </div>
+  </section>
+
+  <section class="featured">
+    <h2>Featured Insights</h2>
+    <div class="content-grid">
+      <div class="content-card">
+        <div class="category" style="color:#A3E635">Governance</div>
+        <h4>The 7 Deadly Sins of Sales Compensation Plans</h4>
+        <p>Why most plans fail before they launch—and the governance gaps that guarantee disputes.</p>
+        <div class="meta">8 min read</div>
+      </div>
+      <div class="content-card">
+        <div class="category" style="color:#38BDF8">Technology</div>
+        <h4>ICM Is Not Governance</h4>
+        <p>Your tool executes. It doesn't govern. Understanding the critical difference.</p>
+        <div class="meta">5 min read</div>
+      </div>
+      <div class="content-card">
+        <div class="category" style="color:#FF8737">Operations</div>
+        <h4>The Exception Epidemic</h4>
+        <p>When exceptions become the rule, your comp plan has already failed.</p>
+        <div class="meta">6 min read</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="toddfather">
+    <div class="avatar">TL</div>
+    <div class="toddfather-content">
+      <h3>Meet <span class="orange">The Toddfather</span></h3>
+      <p>30+ years in sales compensation. Former head of OpenSymmetry. DARPA AI researcher. Zero tolerance for broken comp plans.</p>
+      <div class="toddfather-buttons">
+        <button class="btn-outline">Read My Story</button>
+        <button class="btn-outline btn-filled">Listen to Podcast</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="problem">
+    <h3><span class="warning-icon">!</span> Your Comp Plan Is Probably Broken</h3>
+    <p>Disputes every quarter. Exceptions spiraling. Reps gaming the system. Finance questioning payouts. Sound familiar?</p>
+    <div class="stats">
+      <div class="stat">
+        <div class="number">67%</div>
+        <div class="label">of comp plans have undefined edge cases</div>
+      </div>
+      <div class="stat">
+        <div class="number">$2.1M</div>
+        <div class="label">average annual cost of payout disputes</div>
+      </div>
+      <div class="stat">
+        <div class="number">4.2 hrs</div>
+        <div class="label">per week spent on exception requests</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="services">
+    <h2>Fix Your Comp Plan</h2>
+    <div class="services-grid">
+      <div class="service">
+        <span class="ai-badge">AI-POWERED</span>
+        <h4>SPM Score</h4>
+        <div class="price">$497</div>
+        <p>10-minute diagnostic. Know where you stand.</p>
+      </div>
+      <div class="service">
+        <span class="ai-badge">AI-POWERED</span>
+        <h4>Plan Autopsy</h4>
+        <div class="price">$4,997</div>
+        <p>Deep teardown. Find every gap and risk.</p>
+      </div>
+      <div class="service">
+        <h4>Governance Sprint</h4>
+        <div class="price">Custom</div>
+        <p>Full redesign. 4-8 week transformation.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="subscribe">
+    <h3>Get Smarter About SPM</h3>
+    <p>Weekly insights. No spam. Unsubscribe anytime.</p>
+    <div class="subscribe-form">
+      <input type="email" placeholder="your@email.com">
+      <button class="btn-subscribe" style="padding: 16px 32px; font-size: 16px;">Subscribe</button>
+    </div>
+  </section>
+
+</body>
+</html>

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IntelligentSPM - Hero Rotation Options</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0F172A;
+      color: #E2E8F0;
+      padding: 40px;
+    }
+    h1 { font-size: 28px; text-align: center; margin-bottom: 12px; }
+    .subtitle { text-align: center; color: #94A3B8; margin-bottom: 50px; }
+
+    .hero-card {
+      background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+      border-radius: 20px;
+      padding: 60px;
+      margin-bottom: 40px;
+      border: 2px solid rgba(255,255,255,0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+    .hero-0::before { background: linear-gradient(90deg, #38BDF8, #38BDF8); }
+    .hero-1::before { background: linear-gradient(90deg, #58108E, #8241C8); }
+    .hero-2::before { background: linear-gradient(90deg, #A3E635, #38BDF8); }
+    .hero-3::before { background: linear-gradient(90deg, #FF8737, #EA1B85); }
+
+    .hero-label {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .hero-0 .hero-label { background: #38BDF8; color: #0F172A; }
+    .hero-1 .hero-label { background: linear-gradient(135deg, #58108E, #8241C8); color: white; }
+    .hero-2 .hero-label { background: #A3E635; color: #0F172A; }
+    .hero-3 .hero-label { background: linear-gradient(135deg, #FF8737, #EA1B85); color: white; }
+
+    .kicker {
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+    }
+    .hero-0 .kicker { color: #38BDF8; }
+    .hero-1 .kicker { color: #8241C8; }
+    .hero-2 .kicker { color: #A3E635; }
+    .hero-3 .kicker { color: #FF8737; }
+
+    .hero-card h2 {
+      font-size: 48px;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      max-width: 700px;
+    }
+    .hero-card h2 .teal { color: #38BDF8; }
+    .hero-card h2 .purple { color: #8241C8; }
+    .hero-card h2 .lime { color: #A3E635; }
+    .hero-card h2 .orange { color: #FF8737; }
+    .hero-card .subhead {
+      font-size: 20px;
+      color: #94A3B8;
+      margin-bottom: 32px;
+      max-width: 600px;
+      line-height: 1.5;
+    }
+
+    .proof-bullets {
+      margin-bottom: 40px;
+    }
+    .proof-bullets li {
+      font-size: 16px;
+      color: #94A3B8;
+      margin-bottom: 12px;
+      padding-left: 28px;
+      position: relative;
+      list-style: none;
+    }
+    .proof-bullets li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      font-weight: bold;
+    }
+    .hero-0 .proof-bullets li::before { color: #38BDF8; }
+    .hero-1 .proof-bullets li::before { color: #8241C8; }
+    .hero-2 .proof-bullets li::before { color: #A3E635; }
+    .hero-3 .proof-bullets li::before { color: #FF8737; }
+
+    .cta-row {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    .btn-primary {
+      background: #38BDF8;
+      color: #FFFFFF;
+      padding: 18px 36px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .hero-1 .btn-primary { background: linear-gradient(135deg, #58108E, #8241C8); }
+    .hero-2 .btn-primary { background: #A3E635; color: #0F172A; }
+    .hero-3 .btn-primary { background: linear-gradient(135deg, #FF8737, #EA1B85); }
+    .btn-secondary {
+      background: transparent;
+      border: 2px solid #E2E8F0;
+      color: #E2E8F0;
+      padding: 16px 32px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .alt-headlines {
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .alt-headlines h4 {
+      font-size: 12px;
+      color: #64748B;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+    .alt-headlines p {
+      font-size: 14px;
+      color: #94A3B8;
+      margin-bottom: 8px;
+      font-style: italic;
+    }
+
+    .advice-box {
+      background: rgba(130,65,200,0.1);
+      border: 1px solid #8241C8;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    .advice-box h4 {
+      color: #8241C8;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .advice-box p {
+      font-size: 14px;
+      color: #94A3B8;
+    }
+
+    .nav-preview {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 30px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 12px 12px 0 0;
+      margin: -60px -60px 40px -60px;
+    }
+    .nav-logo { font-size: 22px; font-weight: 700; }
+    .nav-logo .white { color: #E2E8F0; }
+    .nav-logo .teal { color: #38BDF8; }
+    .nav-logo .purple { color: #8241C8; }
+    .nav-logo .lime { color: #A3E635; }
+    .nav-logo .orange { color: #FF8737; }
+    .nav-btn {
+      background: #38BDF8;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      border: none;
+    }
+
+    .rotation-note {
+      background: rgba(56,189,248,0.1);
+      border: 1px solid #38BDF8;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+    .rotation-note h3 {
+      color: #38BDF8;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+    .rotation-note p {
+      color: #94A3B8;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1>4 Rotating Hero Options</h1>
+  <p class="subtitle">Same CTA, different angles: Clearing House, AI, SPM Ops, Brand</p>
+
+  <div class="rotation-note">
+    <h3>Rotation Strategy</h3>
+    <p>Each hero → matching tool: SPM Healthcheck, Upload a Plan, Governance Healthcheck, AskSM (Toddfather LLM).</p>
+  </div>
+
+  <!-- HERO 0: CLEARING HOUSE (Original) -->
+  <div class="hero-card hero-0">
+    <div class="nav-preview">
+      <div class="nav-logo"><span class="white">Intelligent</span><span class="teal">SPM</span></div>
+      <button class="nav-btn">Subscribe</button>
+    </div>
+    <span class="hero-label">Hero 1 — Clearing House</span>
+    <div class="kicker">The SPM Authority</div>
+    <h2>The <span class="teal">Clearing House</span> for SPM</h2>
+    <p class="subhead">30 years of sales compensation expertise. No vendor agenda. No consultant spin.</p>
+    <ul class="proof-bullets">
+      <li>Check your coverage across all 5 SPM pillars</li>
+      <li>See gaps in Planning, Technology, Operations, Governance, Intelligence</li>
+      <li>Vendor-neutral assessment—no sales pitch</li>
+      <li>Know where to invest vs. where you're fine</li>
+    </ul>
+    <div class="cta-row">
+      <button class="btn-primary">Run SPM Healthcheck →</button>
+      <button class="btn-secondary">Book an SPM Intervention</button>
+    </div>
+    <div class="advice-box">
+      <h4>This is Your Anchor</h4>
+      <p>This hero establishes authority and positioning. Lead with this, then rotate to the others to show depth.</p>
+    </div>
+  </div>
+
+  <!-- HERO 1: AI -->
+  <div class="hero-card hero-1">
+    <div class="nav-preview">
+      <div class="nav-logo"><span class="white">Intelligent</span><span class="purple">SPM</span></div>
+      <button class="nav-btn">Subscribe</button>
+    </div>
+    <span class="hero-label">Hero 2 — AI Message</span>
+    <div class="kicker">AI That Actually Knows Comp</div>
+    <h2>Your <span class="purple">Comp Plan</span> has an opinion. Now you can hear it.</h2>
+    <p class="subhead">Upload any plan and get instant clarity: payout math, risk flags, loopholes, and coaching—explained in plain English.</p>
+    <ul class="proof-bullets">
+      <li>Translate any plan into human language</li>
+      <li>Simulate deals, accelerators, caps, and edge cases</li>
+      <li>Detect risk: misalignment, gaming, compliance exposure</li>
+      <li>Coach reps on how to win and stay clean</li>
+    </ul>
+    <div class="cta-row">
+      <button class="btn-primary">Run Comp Plan Healthcheck →</button>
+      <button class="btn-secondary">Book a Plan Autopsy</button>
+    </div>
+    <div class="alt-headlines">
+      <h4>Alt Headlines</h4>
+      <p>"An SPM expert that scales."</p>
+      <p>"Comp math, explained. Instantly."</p>
+    </div>
+  </div>
+
+  <!-- HERO 2: SPM OPS -->
+  <div class="hero-card hero-2">
+    <div class="nav-preview">
+      <div class="nav-logo"><span class="white">Intelligent</span><span class="lime">SPM</span></div>
+      <button class="nav-btn">Subscribe</button>
+    </div>
+    <span class="hero-label">Hero 3 — SPM Ops Message</span>
+    <div class="kicker">Sales Performance Management</div>
+    <h2>Your <span class="lime">Comp Oversight</span> is held together with duct tape.</h2>
+    <p class="subhead">Design, operate, dispute, and oversee with a real SPM operating system—not spreadsheets, inbox rules, and tribal knowledge.</p>
+    <ul class="proof-bullets">
+      <li>Upload your plan docs or policy documents</li>
+      <li>Review against our 21-policy governance framework</li>
+      <li>Find gaps in crediting, exceptions, disputes, terminations</li>
+      <li>Get audit-ready compliance scoring by section</li>
+    </ul>
+    <div class="cta-row">
+      <button class="btn-primary">Run Governance Healthcheck →</button>
+      <button class="btn-secondary">Book a Policy Teardown</button>
+    </div>
+    <div class="alt-headlines">
+      <h4>Alt Headlines</h4>
+      <p>"Stop managing comp in fragments."</p>
+      <p>"From chaos to control—SPM, modernized."</p>
+    </div>
+  </div>
+
+  <!-- HERO 3: Intelligent SPM Brand -->
+  <div class="hero-card hero-3">
+    <div class="nav-preview">
+      <div class="nav-logo"><span class="white">Intelligent</span><span class="orange">SPM</span></div>
+      <button class="nav-btn">Subscribe</button>
+    </div>
+    <span class="hero-label">Hero 4 — Brand Message</span>
+    <div class="kicker">AskSM by The Toddfather</div>
+    <h2>Does your organization have a custom <span class="orange">SPM Expert</span> for immediate support?</h2>
+    <p class="subhead">Intelligent SPM connects comp logic, sales signals, and execution loops—so incentives drive outcomes, not arguments. No vendor agenda. No consultant spin.</p>
+    <ul class="proof-bullets">
+      <li>Ask anything about comp plans, policy, disputes, exceptions</li>
+      <li>Get rulings backed by policy citations and evidence</li>
+      <li>Trained on 30 years of SPM governance experience</li>
+      <li>The Toddfather's brain—available 24/7</li>
+    </ul>
+    <div class="cta-row">
+      <button class="btn-primary">AskSM →</button>
+      <button class="btn-secondary">Book a Toddfather Confab</button>
+    </div>
+    <div class="alt-headlines">
+      <h4>Alt Headlines</h4>
+      <p>"Incentives → Intelligence."</p>
+      <p>"Make compensation a growth engine."</p>
+    </div>
+  </div>
+
+</body>
+</html>
